@@ -1,0 +1,51 @@
+package ce204_hw3_algo_lib_selenium_test;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class SeleniumTest {
+
+    public static void main(String[] args) {
+        // ChromeDriver'ın yolunu doğru şekilde belirtin
+        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver.exe");
+
+        // WebDriver'ı başlatma
+        WebDriver driver = new ChromeDriver();
+
+        // Metin düzenleyici uygulamasını açma
+        driver.get("http://localhost:8080/mytexteditor"); // Metin düzenleyicinin URL'sini buraya girin
+
+        // Metin girişi yapma
+        WebElement textField = driver.findElement(By.id("textFieldId")); // Metin düzenleyici alanının ID'sini buraya girin
+        textField.sendKeys("Hello, World!"); // Metin düzenleyiciye metin girme
+
+        // Kopyalama işlemi
+        WebElement copyButton = driver.findElement(By.id("copyButtonId")); // Kopyalama düğmesinin ID'sini buraya girin
+        copyButton.click(); // Kopyalama düğmesine tıklama
+
+        // Yapıştırma işlemi
+        WebElement pasteButton = driver.findElement(By.id("pasteButtonId")); // Yapıştırma düğmesinin ID'sini buraya girin
+        pasteButton.click(); // Yapıştırma düğmesine tıklama
+
+        // Kaydetme işlemi
+        WebElement saveButton = driver.findElement(By.id("saveButtonId")); // Kaydetme düğmesinin ID'sini buraya girin
+        saveButton.click(); // Kaydetme düğmesine tıklama
+
+        // Dil seçimi
+        WebElement languageComboBox = driver.findElement(By.id("languageComboBoxId")); // Dil seçim kutusunun ID'sini buraya girin
+        languageComboBox.sendKeys("C++"); // C++ dilini seçme
+
+        // Undo işlemi
+        WebElement undoButton = driver.findElement(By.id("undoButtonId")); // Undo düğmesinin ID'sini buraya girin
+        undoButton.click(); // Undo düğmesine tıklama
+
+        // Redo işlemi
+        WebElement redoButton = driver.findElement(By.id("redoButtonId")); // Redo düğmesinin ID'sini buraya girin
+        redoButton.click(); // Redo düğmesine tıklama
+
+        // WebDriver'ı kapatma
+        driver.quit();
+    }
+}

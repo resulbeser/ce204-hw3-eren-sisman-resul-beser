@@ -1,0 +1,6 @@
+INDEX VERSION 1.131+C:\Users\HP\Desktop\ce204-hw3-resul-beser-eren-sisman\.metadata\.plugins\org.eclipse.jdt.core
+2224948954.index
+3413725848.index
+72219835.index
+1865797976.index
+122214181.index

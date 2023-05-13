@@ -1,0 +1,41 @@
+package ce204_hw3_algo_lib_test;
+
+import org.junit.Before;
+import org.junit.Test;
+import javax.swing.*;
+import static org.junit.Assert.*;
+
+public class Editor_Test {
+	
+	@Test
+    public void testCreateWindow() {
+        TextEditor editor = new TextEditor();
+        editor.createWindow();
+
+        JFrame window = editor.getWindow();
+        assertNotNull(window);
+        assertEquals("Notepad", window.getTitle());
+        assertEquals(800, window.getWidth());
+        assertEquals(600, window.getHeight());
+        assertEquals(JFrame.EXIT_ON_CLOSE, window.getDefaultCloseOperation());
+    }
+	
+	@Test
+    public void testCreateTextArea() {
+        editor.createTextArea();
+
+        JTextArea textField = editor.getTextField();
+        JScrollPane scrollPane = editor.getScrollPane();
+
+        assertNotNull(textField);
+        assertNotNull(scrollPane);
+
+        assertSame(textField, scrollPane.getViewport().getView());
+        assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane.getVerticalScrollBarPolicy());
+        assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane.getHorizontalScrollBarPolicy());
+        assertEquals(BorderFactory.createEmptyBorder(), scrollPane.getBorder());
+
+        JPanel contentPane = (JPanel) editor.getWindow().getContentPane().getComponent(0);
+        assertSame(scrollPane, contentPane.getComponent(0));
+    }
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;ce204_hw3_algo_lib&apos;&#x0D;&#x0A;- Original project: &apos;ce204_hw3_algo_lib&apos;&#x0D;&#x0A;- Original element: &apos;View.TextEditorGUI.java&apos;" description="Delete element" element1="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;View{TextEditorGUI.java" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1683501396688" subPackages="false" version="1.0"/>
+</session>

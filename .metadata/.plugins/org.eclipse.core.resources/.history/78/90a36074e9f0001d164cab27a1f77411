@@ -1,0 +1,22 @@
+package View;
+
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class SeleniumTest {
+
+	 public static void main(String[] args) {
+	        // WebDriver'ı başlatma
+	        System.setProperty("webdriver.chrome.driver", "path/to/chromedriver.exe"); // ChromeDriver'ın yolu
+	        WebDriver driver = new ChromeDriver();
+	        
+	        // Bir web sitesine gitme
+	        driver.get("https://www.example.com");
+	        
+	        // Diğer Selenium işlemlerini burada gerçekleştirin
+	        
+	        // WebDriver'ı kapatma
+	        driver.quit();
+	    }
+	
+}

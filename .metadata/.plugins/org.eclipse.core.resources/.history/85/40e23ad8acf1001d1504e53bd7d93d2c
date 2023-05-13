@@ -1,0 +1,163 @@
+package ce204_hw3_algo_lib_test;
+
+import org.junit.Before;
+import org.junit.Test;
+import javax.swing.*;
+import static org.junit.Assert.*;
+import View.Editor;
+
+public class Editor_Test {
+	
+	 @Before
+	    public void setup() {
+	        createWindow();
+	    }
+	    
+	    @Test
+	    public void testWindowTitle() {
+	        String expectedTitle = "Notepad";
+	        String actualTitle = window.getTitle();
+	        assertEquals(expectedTitle, actualTitle);
+	    }
+	    
+	    @Test
+	    public void testWindowSize() {
+	        int expectedWidth = 800;
+	        int expectedHeight = 600;
+	        int actualWidth = window.getWidth();
+	        int actualHeight = window.getHeight();
+	        assertEquals(expectedWidth, actualWidth);
+	        assertEquals(expectedHeight, actualHeight);
+	    }
+	    
+	    public void createWindow() {
+	        window = new JFrame("Notepad");
+	        window.setSize(800, 600);
+	        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    }
+	
+	@Test
+	public void testCreateWindow_2() {
+	 TextEditor editor2 = new TextEditor();
+     editor2.createWindow("My Text Editor", 1024, 768, JFrame.DISPOSE_ON_CLOSE);
+
+     JFrame window2 = editor2.getWindow();
+     assertNotNull(window2);
+     assertEquals("My Text Editor", window2.getTitle());
+     assertEquals(1024, window2.getWidth());
+     assertEquals(768, window2.getHeight());
+     assertEquals(JFrame.DISPOSE_ON_CLOSE, window2.getDefaultCloseOperation());
+	 }
+	
+	@Test
+	public void testCreateWindow_3() {
+		TextEditor editor3 = new TextEditor();
+        editor3.createWindow("Editor", 600, 400, JFrame.HIDE_ON_CLOSE);
+
+        JFrame window3 = editor3.getWindow();
+        assertNotNull(window3);
+        assertEquals("Editor", window3.getTitle());
+        assertEquals(600, window3.getWidth());
+        assertEquals(400, window3.getHeight());
+        assertEquals(JFrame.HIDE_ON_CLOSE, window3.getDefaultCloseOperation());
+    }
+
+	
+	@Test
+    public void testCreateTextArea() {
+        editor.createTextArea();
+
+        JTextArea textField = editor.getTextField();
+        JScrollPane scrollPane = editor.getScrollPane();
+
+        assertNotNull(textField);
+        assertNotNull(scrollPane);
+
+        assertSame(textField, scrollPane.getViewport().getView());
+        assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane.getVerticalScrollBarPolicy());
+        assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane.getHorizontalScrollBarPolicy());
+        assertEquals(BorderFactory.createEmptyBorder(), scrollPane.getBorder());
+
+        JPanel contentPane = (JPanel) editor.getWindow().getContentPane().getComponent(0);
+        assertSame(scrollPane, contentPane.getComponent(0));
+    }
+	
+	
+	@Test
+	public void testCreateTextArea_2() {
+		   TextEditor editor1 = new TextEditor();
+	        editor1.createTextArea();
+
+	        JTextArea textField1 = editor1.getTextField();
+	        JScrollPane scrollPane1 = editor1.getScrollPane();
+
+	        assertNotNull(textField1);
+	        assertNotNull(scrollPane1);
+
+	        assertSame(textField1, scrollPane1.getViewport().getView());
+	        assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane1.getVerticalScrollBarPolicy());
+	        assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane1.getHorizontalScrollBarPolicy());
+	        assertEquals(BorderFactory.createEmptyBorder(), scrollPane1.getBorder());
+
+	        JPanel contentPane1 = (JPanel) editor1.getWindow().getContentPane().getComponent(0);
+	        assertSame(scrollPane1, contentPane1.getComponent(0));
+	 }
+	
+	
+	
+	 @Test
+	 public void testCreateTextArea_3() {
+		 
+		TextEditor editor2 = new TextEditor();
+        editor2.createTextArea(new Dimension(500, 300), Color.YELLOW);
+
+        JTextArea textField2 = editor2.getTextField();
+        JScrollPane scrollPane2 = editor2.getScrollPane();
+
+        assertNotNull(textField2);
+        assertNotNull(scrollPane2);
+
+        assertSame(textField2, scrollPane2.getViewport().getView());
+        assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane2.getVerticalScrollBarPolicy());
+        assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane2.getHorizontalScrollBarPolicy());
+        assertEquals(BorderFactory.createEmptyBorder(), scrollPane2.getBorder());
+
+        JPanel contentPane2 = (JPanel) editor2.getWindow().getContentPane().getComponent(0);
+        assertSame(scrollPane2, contentPane2.getComponent(0));
+
+        assertEquals(new Dimension(500, 300), textField2.getPreferredSize());
+        assertEquals(Color.YELLOW, textField2.getBackground());
+	}
+	
+	 @Test
+	    public void testCreateMenuBar() {
+	        // Menu bar'ın doğru şekilde oluşturulduğunu doğrula
+	        assertNotNull(menuBar);
+
+	        // File menüsünün oluşturulduğunu doğrula
+	        JMenu menuFile = (JMenu) menuBar.getMenu(0);
+	        assertNotNull(menuFile);
+	        assertEquals("File", menuFile.getText());
+
+	        // Save menü öğesinin oluşturulduğunu doğrula
+	        JMenuItem saveMenu = (JMenuItem) menuFile.getMenuComponent(0);
+	        assertNotNull(saveMenu);
+	        assertEquals("Save", saveMenu.getText());
+
+	        // Edit menüsünün oluşturulduğunu doğrula
+	        JMenu menuEdit = (JMenu) menuBar.getMenu(1);
+	        assertNotNull(menuEdit);
+	        assertEquals("Edit", menuEdit.getText());
+
+	        // Copy menü öğesinin oluşturulduğunu ve ActionListener'ın ayarlandığını doğrula
+	        JMenuItem copyMenu = (JMenuItem) menuEdit.getMenuComponent(0);
+	        assertNotNull(copyMenu);
+	        assertEquals("Copy", copyMenu.getText());
+
+	        ActionListener copyActionListener = copyMenu.getActionListeners()[0];
+	        assertNotNull(copyActionListener);
+	    }
+	 
+	 
+	
+}
