@@ -1,0 +1,29 @@
+package Controller;
+
+import View.Editor;
+
+
+public class PasteCommand extends Command {
+
+    public PasteCommand(Editor editor) {
+        super(editor);
+    }
+    /**
+     * @brief Executes the paste command.
+     * 
+     * This method pastes the text from the clipboard into the editor's text field
+     * at the current caret position.
+     * 
+     * @retval true The paste command modifies the editor's state.
+     * @retval false The paste command does not modify the editor's state if the clipboard is empty.
+     */
+    
+    @Override
+    public boolean execute() {
+        if (editor.clipboard == null || editor.clipboard.isEmpty()) return false;
+
+        backup();
+        editor.textField.insert(editor.clipboard, editor.textField.getCaretPosition());
+        return true;
+    }
+}

@@ -1,0 +1,31 @@
+package ce204_hw3_algo_lib_test;
+
+import static org.junit.Assert.*;
+
+import org.junit.Test;
+import View.Editor;
+public class TextEditor_Test {
+
+	 @Test
+	  public void testCreateWindow() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.window); // Pencere oluşturulduğunda null olmamalı
+	    assertEquals("Notepad", editor.window.getTitle()); // Pencere başlığı doğru mu?
+	    assertEquals(800, editor.window.getWidth()); // Pencere genişliği doğru mu?
+	    assertEquals(600, editor.window.getHeight()); // Pencere yüksekliği doğru mu?
+	  }
+	 
+	 @Test
+	  public void testCreateTextArea() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.textField); 
+	  }
+
+	  @Test
+	  public void testBuildFileMenu() {
+	    Editor editor = new Editor();
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); // Dosya menüsü oluşturulduğunda null olmamalı
+	  }
+
+}

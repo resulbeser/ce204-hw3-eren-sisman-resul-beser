@@ -1,0 +1,31 @@
+package Controller;
+
+import View.Editor;
+
+
+
+public abstract class Command {
+    public Editor editor;
+    public String backup;
+
+   public Command(Editor editor) {
+        this.editor = editor;
+    }
+
+    public void backup() {
+        backup = editor.textField.getText();
+    }
+    /**
+     * @brief Restores the editor's text field to the backup state.
+     */
+    public void undo() {
+        editor.textField.setText(backup);
+    }
+    
+    /**
+     * @brief Executes the command.
+     * 
+     * @return true if the command is executed successfully, false otherwise.
+     */
+    public abstract boolean execute();
+}

@@ -1,0 +1,413 @@
+package TextEditor_Test;
+
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import Controller.Command;
+import Controller.CommandHistory;
+import Controller.CopyCommand;
+import Controller.CutCommand;
+import Controller.PasteCommand;
+
+import org.junit.Assert;
+import View.Editor;
+
+public class TextEditor_Test {
+
+    private CopyCommand copyCommand;
+    private CommandHistory commandHistory;
+    private Editor editor;
+    private PasteCommand pasteCommand;
+    private CutCommand cutCommand;
+
+    @Before
+    public void setUp() {
+        commandHistory = new CommandHistory();
+        editor = new Editor();
+        copyCommand = new CopyCommand(editor);
+        pasteCommand = new PasteCommand(editor);
+    }
+
+
+    @Test
+    public void testUndo_1() {
+        editor.textField.setText("Hello");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(2);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("Hello", editor.textField.getText());
+    }
+
+    @Test
+    public void testUndo_2() {
+        editor.textField.setText("Lorem ipsum dolor sit amet");
+        editor.textField.setSelectionStart(3);
+        editor.textField.setSelectionEnd(8);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("Lorem ipsum dolor sit amet", editor.textField.getText());
+    }
+
+    @Test
+    public void testUndo_3() {
+        editor.textField.setText("12345");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(3);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("12345", editor.textField.getText());
+    }
+
+    @Test
+    public void testUndo_4() {
+        editor.textField.setText("Baykar");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(3);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("Baykar", editor.textField.getText());
+    }
+
+    @Test
+    public void testUndo_5() {
+        editor.textField.setText("Lorem ipsum dolor sit amet");
+        editor.textField.setSelectionStart(8);
+        editor.textField.setSelectionEnd(10);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("Lorem ipsum dolor sit amet", editor.textField.getText());
+    }
+
+    @Test
+    public void testUndo_6() {
+        editor.textField.setText("Hi Turkish");
+        editor.textField.setSelectionStart(1);
+        editor.textField.setSelectionEnd(6);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+
+        assertEquals("Hi Turkish", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_1() {
+        editor.textField.setText("Hello");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(2);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+        assertEquals("Hello", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_2() {
+        editor.textField.setText("Lorem ipsum dolor sit amet");
+        editor.textField.setSelectionStart(3);
+        editor.textField.setSelectionEnd(8);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+        assertEquals("Lorem ipsum dolor sit amet", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_3() {
+        editor.textField.setText("12345");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(3);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+        assertEquals("12345", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_4() {
+        editor.textField.setText("Baykar");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(3);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+
+        assertEquals("Baykar", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_5() {
+        editor.textField.setText("Lorem ipsum dolor sit amet");
+        editor.textField.setSelectionStart(8);
+        editor.textField.setSelectionEnd(10);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+        assertEquals("Lorem ipsum dolor sit amet", editor.textField.getText());
+    }
+
+    @Test
+    public void testRedo_6() {
+        editor.textField.setText("Hi Turkish");
+        editor.textField.setSelectionStart(1);
+        editor.textField.setSelectionEnd(6);
+        editor.executeCommand(new CutCommand(editor));
+
+        editor.undo();
+        editor.redo();
+        assertEquals("Hi Turkish", editor.textField.getText());
+    }
+
+    @Test
+    public void testCopyWithoutSelection() {
+        editor.textField.setText("Hello, World!");
+
+        boolean result = copyCommand.execute();
+        assertFalse(result);
+        assertNull(editor.clipboard);
+    }
+
+    @Test
+    public void testCopyEmptyText() {
+        editor.textField.setText("");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(0);
+
+        boolean result = copyCommand.execute();
+        assertFalse(result);
+        assertNull(editor.clipboard);
+    }
+  
+
+    @Test
+    public void testCopy() {
+        editor.textField.setText("Hello, World!");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(5);
+
+    	editor.executeCommand(new CopyCommand(editor));
+        assertEquals("Hello", editor.clipboard);
+    }
+    @Test
+    public void testCopy_2() {
+        editor.textField.setText("Hello, World!");
+        editor.textField.setSelectionStart(2);
+        editor.textField.setSelectionEnd(8);
+
+    	editor.executeCommand(new CopyCommand(editor));
+        assertEquals("llo, W", editor.clipboard);
+    }
+    @Test
+    public void testCopy_3() {
+        editor.textField.setText("Hi Guys");
+        editor.textField.setSelectionStart(3);
+        editor.textField.setSelectionEnd(7);
+
+    	editor.executeCommand(new CopyCommand(editor));
+        assertEquals("Guys", editor.clipboard);
+    }
+
+    @Test
+    public void testCopy_4() {
+        editor.textField.setText("Turkish Airlines");
+        editor.textField.setSelectionStart(8);
+        editor.textField.setSelectionEnd(17);
+
+    	editor.executeCommand(new CopyCommand(editor));
+        assertEquals("Airlines", editor.clipboard);
+    }
+
+
+    @Test
+    public void testPaste() {
+        editor.clipboard = "World";
+    	editor.textField.setText(" Hello");
+
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("World Hello", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_2() {
+        editor.clipboard = "Hi";
+    	editor.textField.setText(" Guys");
+
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("Hi Guys", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_3() {
+        editor.clipboard = "Turn";
+    	editor.textField.setText(" Off");
+
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("Turn Off", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_NoText() {
+        editor.textField.setText("");
+        editor.clipboard = "World";
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("World", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_NoText_2() {
+        editor.textField.setText("");
+        editor.clipboard = "Trabzon";
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("Trabzon", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_NoText_3() {
+        editor.textField.setText("");
+        editor.clipboard = "Merkez";
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("Merkez", editor.textField.getText());
+    }
+    @Test
+    public void testPaste_EmptyClipboard() {
+        editor.textField.setText("Hello");
+        editor.clipboard = "";
+
+        pasteCommand = new PasteCommand(editor);
+    	editor.executeCommand(new PasteCommand(editor));
+        assertEquals("Hello", editor.textField.getText());
+    }
+
+
+    
+    @Test
+    public void testCut() {
+        editor.textField.setText("Hello, World!");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(5);
+
+        cutCommand = new CutCommand(editor);
+    	editor.executeCommand(new CutCommand(editor));
+        assertEquals(", World!", editor.textField.getText());
+    }
+    @Test
+    public void testCut_2() {
+        editor.textField.setText("Hello, Friends");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(5);
+
+        cutCommand = new CutCommand(editor);
+    	editor.executeCommand(new CutCommand(editor));
+        assertEquals(", Friends", editor.textField.getText());
+    }
+    @Test
+    public void testCut_3() {
+        editor.textField.setText("Forza, World!");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(5);
+
+        cutCommand = new CutCommand(editor);
+    	editor.executeCommand(new CutCommand(editor));
+        assertEquals(", World!", editor.textField.getText());
+    }
+
+    @Test
+    public void testCut_NoSelection() {
+        editor.textField.setText("Hello, World!");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(0);
+
+        cutCommand = new CutCommand(editor);
+        assertEquals("Hello, World!", editor.textField.getText());
+    }
+
+    @Test
+    public void testCut_Undo() {
+        editor.textField.setText("Hello, World!");
+        editor.textField.setSelectionStart(0);
+        editor.textField.setSelectionEnd(5);
+
+        cutCommand = new CutCommand(editor);
+    	editor.executeCommand(new CutCommand(editor));
+        assertEquals(", World!", editor.textField.getText());
+        assertEquals("Hello", editor.clipboard);
+
+        editor.undo();
+        assertEquals("Hello, World!", editor.textField.getText());
+    }
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,23 +1,25 @@
 package View;
 
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import javax.swing.text.StyledDocument;
 
-
+import javax.swing.event.DocumentListener;
 import javax.swing.*;
 import javax.swing.JMenu;
 import javax.swing.JScrollPane;
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+
 import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.undo.UndoableEdit;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,8 +29,7 @@ import javax.swing.KeyStroke;
 
 import javax.swing.JLabel;
 import java.awt.Color;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+
 import java.awt.event.KeyAdapter;
 
 import Controller.Command;
@@ -36,37 +37,90 @@ import Controller.CommandHistory;
 import Controller.CopyCommand;
 import Controller.CutCommand;
 import Controller.PasteCommand;
-import Controller.SaveListener;
+
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+
+import SyntaxHighlighter.SyntaxHighlighterInterface;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Keymap;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
+import javax.swing.undo.UndoableEdit;
+
+import Controller.Command;
+import Controller.CommandHistory;
+import Controller.CopyCommand;
+import SyntaxHighlighter.FactorySyntaxHighlighter;
+import SyntaxHighlighter.SyntaxHighlighterInterface;
+import SyntaxHighlighter.java;
+import Controller.*;
+import java.awt.EventQueue;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Editor  {
 	
 	
-	JFrame window;
-	public	JTextArea textField;
-	JMenuBar menuBar;
-	JMenu menuFile, menuEdit;
-	JComboBox comboBox;
-	JMenuItem saveMenu, copyMenu, cutMenu, pasteMenu, undoMenu, redoMenu,freeMenu,javaMenu,cSharpMenu,cppMenu;	
-	JButton undoButton, redoButton;
-	JLabel lblNewLabel;
+	public JFrame window;
+	public JTextPane textField;
+	public JMenuBar menuBar;
+	public JMenu menuFile, menuEdit;
+	public JComboBox comboBox;
+	public JMenuItem saveMenu, copyMenu, cutMenu, pasteMenu, undoMenu, redoMenu,freeMenu,javaMenu,cSharpMenu,cppMenu;	
+	public JButton undoButton, redoButton;
+	public JLabel lblNewLabel;
 	private JFileChooser fileChooser;
 	public String clipboard;
 
     private CommandHistory history = new CommandHistory();
     Editor editor = this;
 
-    public static boolean isSaved = true;
+    public boolean isSaved = true;
+    
+	public Style keywordStyleVariables;
+	public Style keywordStyleLoops;
+	public Style keywordStyleIdentifiers;
+	private Style functionStyle;
+	private Timer highlightTimer;
+	private TimerTask highlightTask;
+	SyntaxHighlighterInterface editText;
     
 	/**
 	 * Launch the application.
 	 */
-//	public static void main(String[] args) {
-	//	new Editor ();
-	//	}
+
 
 	/**
 	 * Create the frame.
 	 */
+	
 	public Editor() {
 		
        // controller = new Controller(this);
@@ -74,66 +128,55 @@ public class Editor  {
 		createWindow();
 		createTextArea();
 		createMenuBar();
-		build_FileMenu();
 		KeyShortcuts();
-
 		textundo();
-		
-		
+		highligtText();
 		window.setVisible(true);
-		
+		languageRead();
+
 	}
 
-	//SaveListener saveListener = new SaveListener();
+	  /**
+     * @brief Creates the main window for the text editor.
+     * 
+     * This method creates a new JFrame with the specified title and size.
+     * It also sets the default close operation for the window.
+     */
+	
 	public void createWindow() {
 		window = new JFrame("Notepad");
 		window.setSize(800,600);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
-		 window.addWindowListener(new WindowAdapter() {
-	            @Override
-	            public void windowClosing(WindowEvent e) {
-	            	if (!isSaved) {
-	            	    int option = JOptionPane.showConfirmDialog(window, "Do you want to save changes before exiting?", "Exit", JOptionPane.YES_NO_OPTION);
-	            	    if (option == JOptionPane.YES_OPTION) {
-	            	        SaveListener saveListener = new SaveListener(editor, null);
-	            	        ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "Save");
-	            	        saveListener.actionPerformed(event);
-	            	    } else if (option == JOptionPane.NO_OPTION) {
-	            	        System.exit(0);
-	            	    }
-	            	} else {
-	            	    System.exit(0);
-	            	}
-	            }
-	        });
 	}
+	
+	/**
+     * @brief Creates the text area for entering and editing text.
+     * 
+     * This method creates a new JTextPane, which serves as the text area.
+     * It also creates a JScrollPane to add scroll bars to the text area
+     * when the content exceeds the visible area. The scroll pane is then
+     * added to the window's content pane.
+     */
 	
 	public void createTextArea() {
 		
-		textField = new JTextArea();
+		textField = new JTextPane();
 
-		 textField.getDocument().addDocumentListener((DocumentListener) new DocumentListener() {
-	           
-	            public void insertUpdate(DocumentEvent e) {
-	                isSaved = false;
-	            }
 
-	           
-	            public void removeUpdate(DocumentEvent e) {
-	                isSaved = false;
-	            }
-
-	           
-	            public void changedUpdate(DocumentEvent e) {}
-	        });
 		
 		JScrollPane scrollPane = new JScrollPane(textField, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder());
 		window.getContentPane().add(scrollPane);  
 	}
 
-
+	/**
+	 * @brief Creates the menu bar for the text editor.
+	 * 
+	 * This method creates a JMenuBar and adds it to the main window.
+	 * It creates menu items for File, Edit, and commands like Save, Copy, Paste, and Cut.
+	 * It also creates buttons for Undo and Redo commands.
+	 */
 	public void createMenuBar() {
 		
 		menuBar = new JMenuBar();
@@ -147,7 +190,6 @@ public class Editor  {
 		saveMenu = new JMenuItem("Save");
 		menuFile.add(saveMenu);
 		saveMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
-		//saveMenu.addActionListener(controller);
 		
 		menuEdit = new JMenu("Edit");
 		menuBar.add(menuEdit);
@@ -208,44 +250,38 @@ public class Editor  {
             }
         });
         
-		//default selected language
-        System.out.println("Java selected");
-        
-        JComboBox comboBox = new JComboBox();
-        menuBar.add(comboBox);
-        
-        comboBox.addItem("Language:    Java");
-        comboBox.addItem("Language:    C#");
-        comboBox.addItem("Language:    C++");
-        
-        comboBox.addActionListener(new ActionListener()
-        { public void actionPerformed(ActionEvent e)
-        { JComboBox cb = (JComboBox)e.getSource();
-        String selectedItem = (String)cb.getSelectedItem();
-        
-        // if selected language is C++, convert to C++ color. 
-        if (selectedItem.equals("Language:    C++")) 
-        { System.out.println("C++ selected"); } 
-        else if (selectedItem.equals("Language:    C#")) 
-        { System.out.println("C# selected"); } 
-        else { System.out.println("Java selected"); } } });
+
+
 		
-        
-        
-		lblNewLabel = new JLabel("                                                                                                                                                ");
-		lblNewLabel.setForeground(new Color(255, 255, 255));
-		menuBar.add(lblNewLabel);
+
 		
 	}
-
-	private void executeCommand(Command command) {
+	
+	/**
+	 * @brief Executes the given command and adds it to the command history if it is successful.
+	 * 
+	 * This method executes the specified command by calling its execute() method.
+	 * If the execution is successful (returns true), the command is added to the command history.
+	 * 
+	 * @param command The command to execute.
+	 */
+	
+	public void executeCommand(Command command) {
 
 		if (command.execute()) {
             history.push(command);
         }
     }
-
-	private void undo() {
+	
+	/**
+	 * @brief Undoes the last executed command.
+	 * 
+	 * This method undoes the last executed command by popping it from the command history.
+	 * If the command is not null, its undo() method is called.
+	 * If the command history is empty, the method performs an undo operation on the text field itself.
+	 */
+	
+	public void undo() {
         if (!history.isEmpty()) {
             Command command = history.pop();
             if (command != null) {
@@ -263,8 +299,15 @@ public class Editor  {
             }
         }
     }
-
-    private void redo() {
+	
+	/**
+	 * @brief Redoes the last undone command.
+	 * 
+	 * This method redoes the last undone command by calling its execute() method.
+	 * If the command is not null, it is executed and added back to the command history.
+	 */
+	
+    public void redo() {
         if (history.isEmpty()) return;
         Command command = history.redo();
         if (command != null) {
@@ -272,6 +315,13 @@ public class Editor  {
         }
     }
 
+    /**
+     * @brief Tracks the text changes in the text field for undo operation.
+     * 
+     * This method adds an UndoableEditListener to the text field's document.
+     * It captures the text before any change occurs and stores it in the textBeforeEdit StringBuilder.
+     * This is used for undoing the text changes if needed.
+     */
     
     private StringBuilder textBeforeEdit;
     private void textundo()
@@ -284,13 +334,15 @@ public class Editor  {
             }
         }
     });
-    
-    
     }
     
-    
-    
-
+    /**
+     * @brief Sets up the key shortcuts for various operations.
+     * 
+     * This method configures key shortcuts for copy, paste, cut, undo, and redo operations.
+     * It adds key listeners to the text field to detect the key events for the specified shortcuts.
+     * When a key event matching a shortcut occurs, the corresponding command is executed.
+     */
     
     private void KeyShortcuts()
     {
@@ -304,13 +356,13 @@ public class Editor  {
         });
     	
 		
-		textField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
-                	executeCommand(new PasteCommand(editor));
-                }
-            }
-        });
+	    textField.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK), "paste");
+	    textField.getActionMap().put("paste", new AbstractAction() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            executeCommand(new PasteCommand(editor));
+	        }
+	    });
     	
 		
 		textField.addKeyListener(new KeyAdapter() {
@@ -322,71 +374,365 @@ public class Editor  {
         });
 		
     
-		textField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
-                	undo();
-                }
-            }
-        });
-    
-		textField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
-                redo();
-                }
-            }
-        });
-		
-		textField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_S) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
-                redo();
-                }
-            }
-        });
-    
-    }
-    
-    
-    
-    
-    
-    
+	    textField.addKeyListener(new KeyAdapter() {
+	        public void keyPressed(KeyEvent e) {
+	            if ((e.getKeyCode() == KeyEvent.VK_Z) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+	                undo();
+	            }
+	        }
+	    });
 
-    public JMenuItem saveFile_MenuItem = new JMenuItem("Save File");
+	    textField.addKeyListener(new KeyAdapter() {
+	        public void keyPressed(KeyEvent e) {
+	            if ((e.getKeyCode() == KeyEvent.VK_Y) && ((e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+	                redo();
+	            }
+	        }
+	    });
     
-    private void build_FileMenu() {
-    
-    	menuFile.add(saveFile_MenuItem);
-    	
-    	
-
     }
     
     
     public void addSaveListener(ActionListener save) {
-        saveFile_MenuItem.addActionListener(save);
+        saveMenu.addActionListener(save);
         
     }
-    public JTextArea getTextPane() {
+    public JTextPane getTextPane() {
     	return this.textField; 
     }
     
+    /**
+     * @brief Sets up syntax highlighting and language selection functionality.
+     * 
+     * This method initializes the syntax highlighter and language selection functionality for the text field.
+     * It creates a combo box with language options and adds an action listener to handle language selection events.
+     * Based on the selected language, the appropriate syntax highlighting styles are applied to the text field.
+     * It also adds listeners to detect text changes and schedule highlighting accordingly.
+     */
+    public void highligtText()
+    {
+		String[] languages = { "Language: C#", "Language: C++", "Language: Java" };
+		JComboBox<String> comboBox = new JComboBox(languages);
+		
 
+		FactorySyntaxHighlighter deneme = new FactorySyntaxHighlighter();
+		editText = deneme.switcthLanguage("csharp");
 
+		keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
+		StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
+
+		// Create the style for keywords2
+		keywordStyleLoops = textField.addStyle("keywordStyleLoops", null);
+		StyleConstants.setForeground(keywordStyleLoops, editText.ColorLoops());
+
+		keywordStyleIdentifiers = textField.addStyle("keywordStyleIdentifiers", null);
+		StyleConstants.setForeground(keywordStyleIdentifiers, editText.ColorIdentifiers());
+		// Create the style for functions
+		functionStyle = textField.addStyle("function", null);
+		StyleConstants.setForeground(functionStyle, editText.ColorFunction());
+		
+		
+		comboBox.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				JComboBox comboBox = (JComboBox) e.getSource();
+				String selectedLanguage = (String) comboBox.getSelectedItem();
+								
+				if (selectedLanguage == "Language: C#") {
+					editText = deneme.switcthLanguage("csharp");
+
+					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
+					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
+
+					// Create the style for keywords2
+					keywordStyleLoops = textField.addStyle("keywordStyleLoops", null);
+					StyleConstants.setForeground(keywordStyleLoops, editText.ColorLoops());
+
+					keywordStyleIdentifiers = textField.addStyle("keywordStyleIdentifiers", null);
+					StyleConstants.setForeground(keywordStyleIdentifiers, editText.ColorIdentifiers());
+					// Create the style for functions
+					functionStyle = textField.addStyle("function", null);
+					StyleConstants.setForeground(functionStyle, editText.ColorFunction());
+
+				} else if (selectedLanguage == "Language: C++") {
+					
+					editText = deneme.switcthLanguage("cplusplus");
+
+					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
+					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
+
+					// Create the style for keywords2
+					keywordStyleLoops = textField.addStyle("keywordStyleLoops", null);
+					StyleConstants.setForeground(keywordStyleLoops, editText.ColorLoops());
+
+					keywordStyleIdentifiers = textField.addStyle("keywordStyleIdentifiers", null);
+					StyleConstants.setForeground(keywordStyleIdentifiers, editText.ColorIdentifiers());
+					// Create the style for functions
+					functionStyle = textField.addStyle("function", null);
+					StyleConstants.setForeground(functionStyle, editText.ColorFunction());
+
+				} else if (selectedLanguage == "Language: Java") {
+
+					editText = deneme.switcthLanguage("java");
+
+					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
+					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
+
+					// Create the style for keywords2
+					keywordStyleLoops = textField.addStyle("keywordStyleLoops", null);
+					StyleConstants.setForeground(keywordStyleLoops, editText.ColorLoops());
+
+					keywordStyleIdentifiers = textField.addStyle("keywordStyleIdentifiers", null);
+					StyleConstants.setForeground(keywordStyleIdentifiers, editText.ColorIdentifiers());
+					// Create the style for functions
+					functionStyle = textField.addStyle("function", null);
+					StyleConstants.setForeground(functionStyle, editText.ColorFunction());
+				} else {
+
+					System.out.println("Hatalı seçim");
+				}
+
+			}
+		});
+		textField.getDocument().addUndoableEditListener(e -> {
+			UndoableEdit edit = e.getEdit();
+			if (edit instanceof DefaultDocumentEvent) {
+				DefaultDocumentEvent documentEvent = (DefaultDocumentEvent) edit;
+				if (documentEvent.getType() == DocumentEvent.EventType.CHANGE) {
+					textBeforeEdit = new StringBuilder(textField.getText());
+				}
+			}
+		});
+		textField.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				scheduleHighlighting();
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				scheduleHighlighting();
+
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				scheduleHighlighting();
+			}
+		});
+    	
+		highlightTimer = new Timer();
+		highlightTask = null;  
+    	
+    }
     
-
-
+    /**
+     * @brief Schedules highlighting of the text field.
+     * 
+     * This method schedules the highlighting task with a delay of 10 milliseconds.
+     * If there is an ongoing highlight task, it cancels the previous task before scheduling a new one.
+     */
     
-    
+	private void scheduleHighlighting() {
+		if (highlightTask != null) {
+			highlightTask.cancel();
+		}
+
+		highlightTask = new TimerTask() {
+			@Override
+			public void run() {
+				highlight();
+			}
+		};
+
+		// Schedule the highlight task with a delay of 300 milliseconds
+		highlightTimer.schedule(highlightTask, 10);
+	}
+	
+	/**
+	 * @brief Checks if a word is surrounded by whitespace.
+	 * 
+	 * This method checks if a word in the text is surrounded by whitespace characters.
+	 * 
+	 * @param text The text to check.
+	 * @param index The index of the word in the text.
+	 * @param length The length of the word.
+	 * @return True if the word is surrounded by whitespace, false otherwise.
+	 */
+	
+	private boolean isSurroundedByWhitespace(String text, int index, int length) {
+		// Check if the word is surrounded by whitespace
+		if ((index == 0 || !Character.isLetterOrDigit(text.charAt(index - 1)))
+				&& (index + length == text.length() || !Character.isLetterOrDigit(text.charAt(index + length)))) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * @brief Highlights occurrences of a word in the text.
+	 * 
+	 * This method highlights occurrences of a word in the text by applying a specified style to the word.
+	 * 
+	 * @param doc The styled document.
+	 * @param text The text to search for the word.
+	 * @param word The word to highlight.
+	 * @param style The style to apply to the word.
+	 * @throws BadLocationException If the location is invalid.
+	 */
+	
+	private void highlightWord(StyledDocument doc, String text, String word, Style style) throws BadLocationException {
+		int start = 0;
+		int index = text.indexOf(word, start);
+		while (index >= 0) {
+			if (isSurroundedByWhitespace(text, index, word.length())) {
+				doc.setCharacterAttributes(index, word.length(), style, false);
+			}
+			start = index + word.length();
+			index = text.indexOf(word, start);
+		}
+	}
+	
+	/**
+	 * @brief Highlights keywords in the text.
+	 * 
+	 * This method highlights keywords in the text by applying corresponding styles to the keywords.
+	 * 
+	 * @param doc The styled document.
+	 * @param text The text to search for keywords.
+	 * @throws BadLocationException If the location is invalid.
+	 */
+	
+	private void highlightKeywords(StyledDocument doc, String text) throws BadLocationException {
+		// Highlight keywords
+
+		for (String word : editText.KeywordVariables()) {
+			highlightWord(doc, text, word, keywordStyleVariables);
+		}
+
+		// Highlight additional keywords
+		for (String word : editText.KeywordLoops()) {
+			highlightWord(doc, text, word, keywordStyleLoops);
+		}
+
+		for (String word : editText.KeywordIdentifiers()) {
+			highlightWord(doc, text, word, keywordStyleIdentifiers);
+		}
+	}
+	
+	/**
+	 * @brief Highlights function calls in the text.
+	 * 
+	 * This method highlights function calls in the text by applying a function style to the function names.
+	 * 
+	 * @param doc The styled document.
+	 * @param text The text to search for function calls.
+     * @throws BadLocationException If the location is invalid.
+     */
+	
+	private void highlightFunctions(StyledDocument doc, String text) throws BadLocationException {
+
+		Style functionStyle = textField.addStyle("function", null);
+		StyleConstants.setForeground(functionStyle, editText.ColorFunction());
+
+		Pattern functionPattern = Pattern.compile("(\\w+)\\s*\\(");
+		Matcher matcher = functionPattern.matcher(text);
+
+		while (matcher.find()) {
+			String functionName = matcher.group(1);
+			highlightWord(doc, text, functionName, functionStyle);
+		}
+	}
+	
+	/**
+	 * @brief Initiates the highlighting process.
+	 * 
+	 * This method is called to initiate the highlighting process.
+	 * It retrieves the text from the text field and performs highlighting based on the text content.
+	 */
+	
+	public void highlight() {
+		SwingUtilities.invokeLater(() -> {
+			try {
+				Document doc = textField.getDocument();
+				String text = doc.getText(0, doc.getLength());
+
+				StyledDocument styledDoc = textField.getStyledDocument();
+				styledDoc.setCharacterAttributes(0, text.length(), textField.getStyle("default"), true);
+
+				highlightFunctions(styledDoc, text);
+				highlightKeywords(styledDoc, text);
+
+			} catch (BadLocationException ex) {
+				ex.printStackTrace();
+			}
+		});
+	}
    
-    
-    
-    
-    
-    
-    
-    
+	/**
+	 * @brief Reads a file and sets the text field content.
+	 * 
+	 * This method reads the content of a file and sets it as the text field content.
+	 * 
+	 * @param textName The name of the file to read.
+	 */
+	
+	private void readFile(String textName) {
+		textField.setText("");
+		try (BufferedReader br = new BufferedReader(new FileReader(textName))) {
+		String line;
+		while ((line = br.readLine()) != null) {
+		textField.getDocument().insertString(textField.getDocument().getLength(), line + "\n", null);
+		}
+		} catch (IOException | BadLocationException e) {
+		e.printStackTrace();
+		}
+		}
 
+	/**
+	 * @brief Reads a file based on the selected language.
+	 * 
+	 * This method reads a file based on the selected language from the combo box.
+	 * It sets the content of the text field accordingly.
+	 */
+	
+ public void languageRead()
+ {        
+	 
+	 JComboBox comboBox = new JComboBox();
+	 menuBar.add(comboBox);
+	 
+	 comboBox.addItem("Language:    Java");
+	 comboBox.addItem("Language:    C#");
+	 comboBox.addItem("Language:    C++");
+	 
+	
+	readFile("CScode.txt");
+	comboBox.addActionListener(new ActionListener()
+	{ public void actionPerformed(ActionEvent e)
+	{ JComboBox cb = (JComboBox)e.getSource();
+	String selectedItem = (String)cb.getSelectedItem();
+	
+	// if selected language is C++, convert to C++ color. 
+	if (selectedItem.equals("Language:    C++")) 
+	{
+		readFile("CPPcode.txt");
+	} 
+	else if (selectedItem.equals("Language:    C#")) 
+	{ 
+		readFile("CScode.txt");
+	} 
+	else 
+	{ 
+		readFile("JavaCode.txt");
+	} 
+	
+	lblNewLabel = new JLabel("                                                                                                                                                ");
+	lblNewLabel.setForeground(new Color(255, 255, 255));
+	menuBar.add(lblNewLabel);
+	
+	
+	}
+});
+ }                   
 }

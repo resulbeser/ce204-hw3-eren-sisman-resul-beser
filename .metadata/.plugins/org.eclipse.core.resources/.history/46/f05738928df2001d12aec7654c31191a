@@ -1,0 +1,55 @@
+package SyntaxHighlighter;
+
+import java.awt.Color;
+
+public class cplusplus implements SyntaxHighlighterInterface {
+	@Override
+	public String[] KeywordVariables() {
+		String[] CPP_KeywordVariables = { "bool", "char", "int", "float", "double", "void", "wchar_t", "short", "long","unsigned","size_t" };
+		return CPP_KeywordVariables;
+	}
+
+	@Override
+	public String[] KeywordLoops() {
+		String[] CPP_KeywordLoops = { "for", "while", "do","while", "enhanced","each", "if", "else", "try", "catch", "case", "break" };
+		return CPP_KeywordLoops;
+	}
+
+	@Override
+	public String[] KeywordIdentifiers() {
+		String[] CPP_KeywordIdentifiers = { "define", "include", "setup","ready", "size_t","public", "if", "else", "try", "catch", "case", "break","true","false" };
+		return CPP_KeywordIdentifiers;
+	}
+
+	@Override
+	public Color ColorVariables() {
+		Color CPP_ColorVariables = Color.green;
+		return CPP_ColorVariables;
+	}
+
+	@Override
+	public Color ColorLoops() {
+		Color CPP_ColorLoops = Color.RED;
+		return CPP_ColorLoops;
+	}
+
+	@Override
+	public Color ColorIdentifiers() {
+		Color CPP_ColorIdentifiers = Color.MAGENTA;
+		return CPP_ColorIdentifiers;
+	}
+	
+	 /**
+     * @brief Retrieves the color for C++ functions.
+     *
+     * This method returns the color used for C++ functions in syntax highlighting.
+     *
+     * @return The color for C++ functions.
+     */
+	
+	@Override
+	public Color ColorFunction() {
+		Color CPP_ColorFunction = Color.ORANGE;
+		return CPP_ColorFunction;
+	}
+}

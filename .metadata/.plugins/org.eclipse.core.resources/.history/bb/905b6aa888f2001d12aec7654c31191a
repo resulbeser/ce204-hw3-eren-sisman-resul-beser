@@ -1,0 +1,30 @@
+package Controller;
+
+import View.Editor;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
+
+public class PasteCommand extends Command {
+
+    public PasteCommand(Editor editor) {
+        super(editor);
+    }
+
+    @Override
+    public boolean execute() {
+        if (editor.clipboard == null || editor.clipboard.isEmpty()) return false;
+
+        backup();
+
+        StyledDocument doc = editor.textField.getStyledDocument();
+        int caretPosition = editor.textField.getCaretPosition();
+
+        try {
+            doc.insertString(caretPosition, editor.clipboard, null);
+            return true;
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}

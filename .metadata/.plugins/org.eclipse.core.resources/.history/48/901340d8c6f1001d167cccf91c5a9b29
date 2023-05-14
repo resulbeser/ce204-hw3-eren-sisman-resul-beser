@@ -1,0 +1,121 @@
+package ce204_hw3_algo_lib_test;
+
+import static org.junit.Assert.*;
+
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+
+import org.junit.Test;
+import View.Editor;
+
+
+public class TextEditor_Test {
+
+	 @Test
+	  public void testCreateWindow() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.window); 
+	    assertEquals("Notepad", editor.window.getTitle()); 
+	    assertEquals(800, editor.window.getWidth()); 
+	    assertEquals(600, editor.window.getHeight()); 
+	  }
+	 
+	 @Test
+	  public void CreateTextArea() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.textField); 
+	  }
+
+	  @Test
+	  public void testBuildFileMenu() {
+	    Editor editor = new Editor();
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); 
+	  }
+	  
+	  @Test
+	  public void testCreateTextArea() {
+	    Editor editor = new Editor();
+	    JTextArea textField = editor.textField;
+	    assertNotNull(textField); 
+
+	    JScrollPane scrollPane = (JScrollPane) editor.window.getContentPane().getComponent(0);
+	    assertSame(textField, scrollPane.getViewport().getView()); 
+
+	    assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane.getVerticalScrollBarPolicy());
+	    assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane.getHorizontalScrollBarPolicy());
+	    assertEquals(BorderFactory.createEmptyBorder(), scrollPane.getBorder());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar); // Menu çubuğu oluşturulduğunda null olmamalı
+
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); // "File" menüsü oluşturulduğunda null olmamalı
+	    assertEquals("File", menuFile.getText()); // Menü adı doğru mu?
+	    assertEquals(menuBar, menuFile.getParent()); 
+    }
+	  
+	  @Test
+	  public void testCreateMenuBar2() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenuItem saveMenu = editor.saveMenu;
+	    assertNotNull(saveMenu); 
+	    assertEquals("Save", saveMenu.getText()); 
+	    assertEquals(editor.menuFile, saveMenu.getParent());
+	    KeyStroke saveKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
+	    assertEquals(saveKeyStroke, saveMenu.getAccelerator());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar3() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenu menuEdit = editor.menuEdit;
+	    assertNotNull(menuEdit); 
+	    assertEquals("Edit", menuEdit.getText()); 
+	    assertEquals(menuBar, menuEdit.getParent());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar4() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenuItem copyMenu = editor.copyMenu;
+	    assertNotNull(copyMenu); // "Copy" menü öğesi oluşturulduğunda null olmamalı
+	    assertEquals("Copy", copyMenu.getText()); // Menü öğesi adı doğru mu?
+	    assertEquals(editor.menuEdit, copyMenu.getParent());
+	    KeyStroke copyKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK);
+	    assertEquals(copyKeyStroke, copyMenu.getAccelerator()); // Kısayol doğru mu?
+	    ActionListener[] copyMenuActionListeners = copyMenu.getActionListeners();
+	    assertEquals(1, copyMenuActionListeners.length); // Bir action listener olmalı
+	    assertTrue(copyMenuActionListeners[0] instanceof ActionListener);
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar5() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	  }
+}

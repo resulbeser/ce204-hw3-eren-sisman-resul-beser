@@ -1,0 +1,43 @@
+package Controller;
+
+import View.Editor;
+
+
+public class CutCommand extends Command {
+
+    public CutCommand(Editor editor) {
+        super(editor);
+    }
+    /**
+     * @brief Executes the cut command.
+     * 
+     * This method cuts the selected text in the editor, places it in the clipboard,
+     * and updates the editor's text field.
+     * 
+     * @retval true The cut command modifies the editor's state.
+     * @retval false The cut command does not modify the editor's state if no text is selected.
+     */
+    @Override
+    public boolean execute() {
+        if (editor.textField.getSelectedText().isEmpty()) return false;
+
+        backup();
+        String source = editor.textField.getText();
+        editor.clipboard = editor.textField.getSelectedText();
+        editor.textField.setText(cutString(source));
+        return true;
+    }
+    /**
+     * @brief Cuts the selected text from the source string.
+     * 
+     * This method removes the selected text from the source string and returns the resulting string.
+     * 
+     * @param source The source string from which the text is cut.
+     * @return The resulting string after cutting the selected text.
+     */
+    private String cutString(String source) {
+        String start = source.substring(0, editor.textField.getSelectionStart());
+        String end = source.substring(editor.textField.getSelectionEnd());
+        return start + end;
+    }
+}

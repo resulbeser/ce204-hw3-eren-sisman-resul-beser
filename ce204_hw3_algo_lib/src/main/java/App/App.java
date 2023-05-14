@@ -5,8 +5,19 @@ import Model.Model;
 import View.Editor;
 import Controller.SaveListener;
 
-
-public class App {
+    /**
+     * @class App
+     * @brief The main application class for the editor program.
+     */
+   public class App {
+	   
+	/**
+     * @brief The main entry point for the editor application.
+     * 
+     * This method creates an instance of the Model, Editor, and SaveListener classes to start the editor program.
+     * 
+     * @param args The command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
     	Model model = new Model();
         Editor view = new Editor();

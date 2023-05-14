@@ -1,0 +1,195 @@
+package ce204_hw3_algo_lib_test;
+
+import static org.junit.Assert.*;
+
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import Controller.CopyCommand;
+import Controller.CutCommand;
+import Controller.PasteCommand;
+import View.Editor;
+
+
+public class TextEditor_Test {
+
+	private Editor editor;
+	
+	@Before
+    public void setUp() {
+        
+        editor = new Editor();
+      
+    }
+	
+	 @Test
+	  public void testCreateWindow() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.window); 
+	    assertEquals("Notepad", editor.window.getTitle()); 
+	    assertEquals(800, editor.window.getWidth()); 
+	    assertEquals(600, editor.window.getHeight()); 
+	  }
+	 
+	 @Test
+	  public void CreateTextArea() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.textField); 
+	  }
+
+	  @Test
+	  public void testBuildFileMenu() {
+	    Editor editor = new Editor();
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); 
+	  }
+	  
+	  @Test
+	  public void testCreateTextArea() {
+	    Editor editor = new Editor();
+	    JTextArea textField = editor.textField;
+	    assertNotNull(textField); 
+
+	    JScrollPane scrollPane = (JScrollPane) editor.window.getContentPane().getComponent(0);
+	    assertSame(textField, scrollPane.getViewport().getView()); 
+
+	    assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane.getVerticalScrollBarPolicy());
+	    assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane.getHorizontalScrollBarPolicy());
+	    assertEquals(BorderFactory.createEmptyBorder(), scrollPane.getBorder());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); 
+	    assertEquals("File", menuFile.getText());
+	    assertEquals(menuBar, menuFile.getParent()); 
+    }
+	  
+	  @Test
+	  public void testCreateMenuBar2() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenuItem saveMenu = editor.saveMenu;
+	    assertNotNull(saveMenu); 
+	    assertEquals("Save", saveMenu.getText()); 
+	    KeyStroke saveKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK);
+	    assertEquals(saveKeyStroke, saveMenu.getAccelerator());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar3() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenu menuEdit = editor.menuEdit;
+	    assertNotNull(menuEdit); 
+	    assertEquals("Edit", menuEdit.getText()); 
+	    assertEquals(menuBar, menuEdit.getParent());
+	  }
+	  
+	  @Test
+	  public void testCreateMenuBar4() {
+	    Editor editor = new Editor();
+	    JMenuBar menuBar = editor.menuBar;
+	    assertNotNull(menuBar);
+	    
+	    JMenuItem copyMenu = editor.copyMenu;
+	    assertNotNull(copyMenu); 
+	    assertEquals("Copy", copyMenu.getText());    
+	    KeyStroke copyKeyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK);
+	    assertEquals(copyKeyStroke, copyMenu.getAccelerator()); 
+	    ActionListener[] copyMenuActionListeners = copyMenu.getActionListeners();
+	    assertEquals(1, copyMenuActionListeners.length); 
+	    assertTrue(copyMenuActionListeners[0] instanceof ActionListener);
+	  }
+	  
+	  //TEST UNDO BUTTON
+	  @Test
+	    public void testUndo() {	        
+	        assertEquals("", editor.textField.getText());	        
+	        editor.textField.setText("Hello, world!");	     
+	        assertEquals("Hello, world!", editor.textField.getText());	       
+	        editor.undo();	        
+	        assertEquals("", editor.textField.getText());
+	    }
+	  
+	//TEST REDO BUTTON
+	  @Test
+	    public void testRedo() {
+	        
+	        assertEquals("", editor.textField.getText());	        
+	        editor.textField.setText("Hello, world!");
+	        editor.undo();	     
+	        assertEquals("", editor.textField.getText());	        
+	        editor.redo();       
+	        assertEquals("Hello, world!", editor.textField.getText());
+	    }
+	  
+	  //TEST CUT BUTTON
+	  @Test
+	    public void testCut() {
+	       
+	        assertEquals("", editor.textField.getText());	        
+	        editor.textField.setText("Hello, world!");	        
+	        editor.textField.setSelectionStart(0);
+	        editor.textField.setSelectionEnd(5);
+	        editor.executeCommand(new CutCommand(editor));        
+	        assertEquals("world!", editor.textField.getText());	        	        
+	        assertEquals("Hello", editor.clipboard);
+	    }
+	  
+	//TEST COPY BUTTON
+	  @Test
+	    public void testCopy() {
+	        
+	        assertEquals("", editor.textField.getText());	        
+	        editor.textField.setText("Hello, world!");        
+	        editor.textField.setSelectionStart(0);
+	        editor.textField.setSelectionEnd(5);
+	        editor.executeCommand(new CopyCommand(editor));	       
+	        assertEquals("Hello", editor.clipboard);
+	    }
+	  
+	//TEST PASTE BUTTON
+	  @Test
+	    public void testPaste() {
+	        
+	        assertEquals("", editor.textField.getText());	     
+	        editor.clipboard = "Hello";	       
+	        editor.executeCommand(new PasteCommand(editor));	        
+	        assertEquals("Hello", editor.textField.getText());
+	    }
+	  
+	  @Test
+	    public void testSaveButtonClicked() {
+	        // Başlangıçta saveButtonClicked değeri false olmalıdır
+	        assertEquals(false, saveButtonClicked);
+
+	        // Kaydetme butonuna tıklayalım
+	        editor.saveMenu.doClick();
+
+	        // saveButtonClicked değerinin true olduğunu doğrulayalım
+	        assertEquals(true, saveButtonClicked);
+	    }
+}

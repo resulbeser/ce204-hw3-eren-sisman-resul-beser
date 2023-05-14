@@ -1,0 +1,38 @@
+package Controller;
+
+import java.util.Stack;
+
+
+public class CommandHistory {
+    private Stack<Command> history = new Stack<>();
+    private Stack<Command> redoStack = new Stack<>();
+
+    public void push(Command c) {
+        history.push(c);
+        redoStack.clear();
+    }
+
+    public Command pop() {
+        Command c = history.pop();
+        redoStack.push(c);
+        return c;
+    }
+    /**
+     * @brief Redoes the previously undone command and returns it.
+     * 
+     * @return The redone command, or null if there are no commands to redo.
+     */
+    public Command redo() {
+        if (redoStack.isEmpty()) return null;
+        Command c = redoStack.pop();
+        history.push(c);
+        return c;
+    }
+    /**
+     * @brief Checks if the command history is empty.
+     * 
+     * @return true if the history is empty, false otherwise.
+     */
+    public boolean isEmpty() { return history.isEmpty(); }
+
+}

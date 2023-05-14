@@ -1,0 +1,23 @@
+package Controller;
+
+import View.Editor;
+
+
+public class CopyCommand extends Command {
+
+	    public CopyCommand(Editor editor) {
+	        super(editor);
+	    }
+	    /**
+	     * @brief Executes the copy command.
+	     * 
+	     * This method copies the selected text in the editor to the clipboard.
+	     * 
+	     * @retval false The copy command does not modify the editor's state.
+	     */
+	    @Override
+	    public boolean execute() {
+	        editor.clipboard = editor.textField.getSelectedText();
+	        return false;
+	    }
+}

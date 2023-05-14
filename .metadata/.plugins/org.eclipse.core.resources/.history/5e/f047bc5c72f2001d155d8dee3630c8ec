@@ -1,0 +1,37 @@
+package Controller;
+
+import View.Editor;
+
+/**
+ * @class Command
+ * @brief Base class for commands in the controller.
+ */
+
+public abstract class Command {
+    public Editor editor;
+    private String backup;
+    
+    /**
+     * @brief Constructs a new Command object with the specified editor.
+     * 
+     * @param editor The editor instance to associate with the command.
+     */
+    Command(Editor editor) {
+        this.editor = editor;
+    }
+    /**
+     * @brief Creates a backup of the editor's text field.
+     */
+    void backup() {
+        backup = editor.textField.getText();
+    }
+    
+    /**
+     * @brief Restores the editor's text field to the backup state.
+     */
+    public void undo() {
+        editor.textField.setText(backup);
+    }
+
+    public abstract boolean execute();
+}

@@ -1,0 +1,52 @@
+package ce204_hw3_algo_lib_test;
+
+import static org.junit.Assert.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.junit.Test;
+import View.Editor;
+
+
+public class TextEditor_Test {
+
+	 @Test
+	  public void testCreateWindow() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.window); 
+	    assertEquals("Notepad", editor.window.getTitle()); 
+	    assertEquals(800, editor.window.getWidth()); 
+	    assertEquals(600, editor.window.getHeight()); 
+	  }
+	 
+	 @Test
+	  public void CreateTextArea() {
+	    Editor editor = new Editor();
+	    assertNotNull(editor.textField); 
+	  }
+
+	  @Test
+	  public void testBuildFileMenu() {
+	    Editor editor = new Editor();
+	    JMenu menuFile = editor.menuFile;
+	    assertNotNull(menuFile); 
+	  }
+	  
+	  @Test
+	  public void testCreateTextArea() {
+	    Editor editor = new Editor();
+	    JTextArea textField = editor.textField;
+	    assertNotNull(textField); 
+
+	    JScrollPane scrollPane = (JScrollPane) editor.window.getContentPane().getComponent(0);
+	    assertSame(textField, scrollPane.getViewport().getView()); // JTextArea, JScrollPane içinde yer almalı
+
+	    assertEquals(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, scrollPane.getVerticalScrollBarPolicy());
+	    assertEquals(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED, scrollPane.getHorizontalScrollBarPolicy());
+	    assertEquals(BorderFactory.createEmptyBorder(), scrollPane.getBorder());
+	  }
+
+}
