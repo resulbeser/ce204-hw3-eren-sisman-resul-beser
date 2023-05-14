@@ -24,7 +24,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 
 import javax.swing.JLabel;
@@ -46,43 +45,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.AbstractDocument.DefaultDocumentEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.Keymap;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-import javax.swing.undo.UndoableEdit;
-
-import Controller.Command;
-import Controller.CommandHistory;
-import Controller.CopyCommand;
 import SyntaxHighlighter.FactorySyntaxHighlighter;
-import SyntaxHighlighter.SyntaxHighlighterInterface;
 import SyntaxHighlighter.java;
-import Controller.*;
-import java.awt.EventQueue;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.*;
-import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * @file ce204_hw3_algo_lib
