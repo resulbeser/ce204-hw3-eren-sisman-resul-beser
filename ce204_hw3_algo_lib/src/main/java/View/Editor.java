@@ -84,6 +84,18 @@ import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @file ce204_hw3_algo_lib
+ * @author Eren SISMAN, Resul BESER
+ * @date 14 May 2023
+ *
+ * @brief <b> HW-3 Functions </b>
+ *
+ * HW-3 Sample Functions
+ *
+ * @see http://bilgisayar.mmf.erdogan.edu.tr/en/
+ *
+ */
 
 public class Editor  {
 	
@@ -112,14 +124,6 @@ public class Editor  {
 	private TimerTask highlightTask;
 	SyntaxHighlighterInterface editText;
     
-	/**
-	 * Launch the application.
-	 */
-
-
-	/**
-	 * Create the frame.
-	 */
 	
 	public Editor() {
 		
@@ -133,10 +137,11 @@ public class Editor  {
 		highligtText();
 		window.setVisible(true);
 		languageRead();
+		freeBar();
 
 	}
 
-	  /**
+	/**
      * @brief Creates the main window for the text editor.
      * 
      * This method creates a new JFrame with the specified title and size.
@@ -144,7 +149,7 @@ public class Editor  {
      */
 	
 	public void createWindow() {
-		window = new JFrame("Notepad");
+		window = new JFrame("ERes Notepad");
 		window.setSize(800,600);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
@@ -415,8 +420,8 @@ public class Editor  {
 		JComboBox<String> comboBox = new JComboBox(languages);
 		
 
-		FactorySyntaxHighlighter deneme = new FactorySyntaxHighlighter();
-		editText = deneme.switcthLanguage("csharp");
+		FactorySyntaxHighlighter textHighlighter = new FactorySyntaxHighlighter();
+		editText = textHighlighter.switcthLanguage("csharp");
 
 		keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
 		StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
@@ -439,7 +444,7 @@ public class Editor  {
 				String selectedLanguage = (String) comboBox.getSelectedItem();
 								
 				if (selectedLanguage == "Language: C#") {
-					editText = deneme.switcthLanguage("csharp");
+					editText = textHighlighter.switcthLanguage("csharp");
 
 					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
 					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
@@ -456,7 +461,7 @@ public class Editor  {
 
 				} else if (selectedLanguage == "Language: C++") {
 					
-					editText = deneme.switcthLanguage("cplusplus");
+					editText = textHighlighter.switcthLanguage("cplusplus");
 
 					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
 					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
@@ -473,7 +478,7 @@ public class Editor  {
 
 				} else if (selectedLanguage == "Language: Java") {
 
-					editText = deneme.switcthLanguage("java");
+					editText = textHighlighter.switcthLanguage("java");
 
 					keywordStyleVariables = textField.addStyle("keywordStyleVariables", null);
 					StyleConstants.setForeground(keywordStyleVariables, editText.ColorVariables());
@@ -727,12 +732,22 @@ public class Editor  {
 		readFile("JavaCode.txt");
 	} 
 	
-	lblNewLabel = new JLabel("                                                                                                                                                ");
-	lblNewLabel.setForeground(new Color(255, 255, 255));
-	menuBar.add(lblNewLabel);
+	
 	
 	
 	}
 });
- }                   
-}
+ }    
+ 
+ public void freeBar () {
+	 
+	 lblNewLabel = new JLabel("                                                                                                                                                ");
+		lblNewLabel.setForeground(new Color(255, 255, 255));
+		menuBar.add(lblNewLabel);
+ }
+ 
+ 
+ 
+ 
+ 
+} 

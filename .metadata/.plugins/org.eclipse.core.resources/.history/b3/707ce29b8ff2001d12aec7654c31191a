@@ -1,0 +1,31 @@
+package SyntaxHighlighter;
+
+import java.awt.Color;
+
+/**
+ * @interface SyntaxHighlighterInterface
+ * @brief Defines the interface for a syntax highlighter.
+ *
+ * The SyntaxHighlighterInterface provides methods for retrieving keyword arrays and colors
+ * for syntax highlighting in various programming languages.
+ */
+
+public interface SyntaxHighlighterInterface {
+	
+	 /**
+     * @brief Retrieves the array of variable keywords.
+     *
+     * This method should be implemented to return an array of variable keywords.
+     *
+     * @return The array of variable keywords.
+     */
+	
+	public String[] KeywordVariables();
+	public String[] KeywordLoops();
+	public String[] KeywordIdentifiers();
+	public Color ColorVariables();
+	public Color ColorLoops();
+	public Color ColorIdentifiers();
+	
+	public Color ColorFunction();
+}

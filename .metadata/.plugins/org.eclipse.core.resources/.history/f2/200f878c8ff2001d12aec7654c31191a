@@ -1,0 +1,20 @@
+package SyntaxHighlighter;
+
+import java.awt.Color;
+
+public interface SyntaxHighlighterInterface {
+	public String[] KeywordVariables();
+	public String[] KeywordLoops();
+	public String[] KeywordIdentifiers();
+	public Color ColorVariables();
+	public Color ColorLoops();
+	public Color ColorIdentifiers();
+	 /**
+     * @brief Retrieves the color for function highlighting.
+     *
+     * This method should be implemented to return the color used for highlighting functions.
+     *
+     * @return The color for function highlighting.
+     */
+	public Color ColorFunction();
+}
